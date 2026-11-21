@@ -1,0 +1,16 @@
+interface Wireguard1
+  wireguard listen-port 51821
+  wireguard private-key QOXZ4oep9x/DDasIqHxCqixzbITfGj086H27XzzkVFg=
+  wireguard peer n3gsXXTWtKPmADt01ld8ZdYXIDE46B3U6ppC72Z1dXI=
+    wireguard allowed-ips 10.20.20.2/32
+    wireguard persistent-keepalive 25
+    exit
+  ip address 10.20.20.1/24
+  security-level private
+  up
+exit
+access-list _WEBADMIN_GigabitEthernet1
+  permit udp 0.0.0.0 0.0.0.0 0.0.0.0 0.0.0.0 port eq 51821
+  exit
+ip nat Wireguard1
+system configuration save

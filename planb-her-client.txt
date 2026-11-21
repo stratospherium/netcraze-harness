@@ -1,0 +1,14 @@
+interface Wireguard1
+  wireguard private-key 8Mk42U1pBR9qzePIACWhgemoizXBWLsnTr+DRjpy8Hs=
+  wireguard peer U8eiVvcZEnLrPXHxvCy02phOhJRoaWoPKNq8MMJvZn0=
+    wireguard endpoint 176.116.174.67:51821
+    wireguard allowed-ips 10.20.20.1/32
+    wireguard persistent-keepalive 25
+    exit
+  ip address 10.20.20.2/24
+  security-level private
+  up
+exit
+ip route 91.108.0.0/16 Wireguard1
+ip route 149.154.160.0/20 Wireguard1
+system configuration save
