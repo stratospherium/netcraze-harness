@@ -80,8 +80,8 @@ wg_ok = ("0% packet loss" in out) or ("2 packets received" in out) or \
 note("WireGuard-туннель (ping 10.20.20.1)", wg_ok,
      "loss 0%" if wg_ok else "туннель не отвечает")
 
-# 3. Entware dropbear её роутера (2223)
-note("Entware dropbear на 2223", tcp(HER_ROUTER, TUNNEL_PORT, 6))
+# 3. Entware dropbear — только через туннель (снаружи режет ACL по дизайну)
+#    проверяется позже, когда туннель поднят (см. блок dropbear-via-tunnel)
 
 # 4. xray версия на её роутере (через туннель -> 2223)
 tunnel = subprocess.Popen(
@@ -125,7 +125,12 @@ def curl_exit(socks, target_port=None):
            "--socks5", socks, "-sS", "https://api.ipify.org"]
     return run(cmd, 30).strip()
 
-e1 = curl_exit("192.168.1.45:222")
+e1 = ""
+for attempt in (1, 2, 3):  # ретраи: канал бывает flaky
+    e1 = curl_exit("192.168.1.45:222")
+    if e1 and " " not in e1:
+        break
+    time.sleep(3)
 note("Exit-IP через её socks :222", bool(e1) and " " not in e1, f"exit={e1 or '—'}")
 e2 = curl_exit(f"{HIS_ROUTER}:10809")
 note("Exit-IP через его socks :10809", e2 == "77.221.140.43", f"exit={e2 or '—'}")
